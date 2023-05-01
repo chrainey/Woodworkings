@@ -1,25 +1,7 @@
 /* eslint-disable no-unused-vars */
 import express from 'express'
-import mongoose from 'mongoose'
-
-const connectToDb = async () => {
-  const opts = {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  }
-  return mongoose.connect('mongodb://localhost:27017/plans', opts)
-}
-
-const planSchema = new mongoose.Schema({
-  name: { type: String, required: true, unique: true },
-  description: String,
-  price: { type: Number, required: true },
-  author: { type: String, required: true },
-  type: String,
-  createdAt: { type: Date, default: Date.now },
-})
-
-const PlanModel = mongoose.model('Plan', planSchema)
+import PlanModel from './models/plans.js'
+import connectToDb from './utils/db.js'
 
 const PORT = 4000
 const app = express()
@@ -68,7 +50,12 @@ app.put('/plans/:id', async (req, res) => {
   const { id } = req.params
   const { body: updatedPlan } = req
   const updatedDocument = await PlanModel.findByIdAndUpdate(id, updatedPlan, { new: true })
-  return res.status(200).json(updatedDocument)
+  if (!updatedDocument) {
+    return res.status(404).json({ message: 'This id cannot be found' })
+  } else {
+    return res.status(200).json(updatedDocument)
+
+  }
 })
 
 //Error Handling to catch all other enpoints
