@@ -10,6 +10,17 @@ const connectToDb = async () => {
   return mongoose.connect('mongodb://localhost:27017/plans', opts)
 }
 
+const planSchema = new mongoose.Schema({
+  name: { type: String, required: true, unique: true },
+  description: String,
+  price: { type: Number, required: true },
+  author: { type: String, required: true },
+  type: String,
+  createdAt: { type: Date, default: Date.now },
+})
+
+const PlanModel = mongoose.model('Plan', planSchema)
+
 const PORT = 4000
 const app = express()
 
@@ -22,12 +33,42 @@ app.use((req, _res, next) => {
   next()
 })
 
-app.get('/', (req, res, next) => {
+app.get('/', async (req, res, next) => {
   return res.status(200).send('API is running')
 })
 
-app.get('/random', (req, res, next) => {
-  return res.status(204).send(`Random Number: ${Math.random() * 10}`)
+// Get all plans //
+
+app.get('/plans', async (req, res, next) => {
+  const allPlans = await PlanModel.find()
+  console.log(allPlans)
+  return res.status(200).json(allPlans)
+})
+
+// Get a plan by objectId //
+
+app.get('/plans/:id', async (req, res, next) => {
+  const { id } = req.params
+  const foundPlan = await PlanModel.findById(id)
+  
+  return res.status(200).json(foundPlan)
+})
+
+// Create new plan //
+
+app.post('/plans', async ( req, res ) => {
+  const { body: newPlan } = req
+  const createdDocument = await PlanModel.create(newPlan)
+  return res.status(200).json(createdDocument)
+})
+
+// Update an entry //
+
+app.put('/plans/:id', async (req, res) => {
+  const { id } = req.params
+  const { body: updatedPlan } = req
+  const updatedDocument = await PlanModel.findByIdAndUpdate(id, updatedPlan, { new: true })
+  return res.status(200).json(updatedDocument)
 })
 
 //Error Handling to catch all other enpoints
@@ -44,6 +85,5 @@ const startServer = async () => {
     console.log(`Express server running on port ${PORT}`)
   })
 }
-
 
 startServer()
