@@ -7,8 +7,8 @@ const seed = async () => {
   await connectToDb()
   console.log('Database Connected!')
 
-  mongoose.connection.db.dropDatabase()
-
+  await mongoose.connection.db.dropDatabase()
+  // await mongoose.connection.db.dropCollection('plans')
   const dbPlans = await PlanModel.create(seedingData)
   console.log(`${dbPlans.length} plans have been created successfully in the database.`)
 

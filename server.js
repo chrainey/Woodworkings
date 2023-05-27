@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import express from 'express'
 import connectToDb from './utils/db.js'
+import auth from './middleware/auth.js'
 import logger from './middleware/logger.js'
 import router from './router.js'
 import CONSTS from './consts.js'
