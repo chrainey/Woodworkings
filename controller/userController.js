@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import CONSTS from './../consts.js'
 
-const register = async (req, res, next) => {
+const register = async (req, res) => {
   const { body: newUser } = req
   const emailExists = await UserModel.findOne({ email: newUser.email })
   if (emailExists) {
@@ -13,17 +13,13 @@ const register = async (req, res, next) => {
   if (userExists) {
     return res.status(400).json({ message: 'User with this username already exists.' })
   }
-  
-
   if (newUser.password !== newUser.confirmPassword) {
     return res.status(400).json({ message: 'Passwords do not match.' })
   }
 
   const salt = await bcrypt.genSalt(10)
-  console.log({ salt })
   const hashedPassword = await bcrypt.hash(newUser.password, salt)
   const createdUser = await UserModel.create({ ...newUser, password: hashedPassword })
-
   return res.status(200).json({ createdUser })
 }
 
@@ -37,8 +33,7 @@ const login = async (req, res, next) => {
     const passwordsMatch = await bcrypt.compare( password, user.password)
     if (!passwordsMatch) {
       return res.status(400).json({ message: 'Invalid credentials.' })
-    }
-    
+    } 
     const payload = {
       userName: user.userName,
       email: user.email,

@@ -25,7 +25,10 @@ const getPlan = async (req, res, next) => {
 const newPlan = async (req, res, next) => {
   const { body: newPlan } = req
   try {
-    const createdDocument = await PlanModel.create(newPlan)
+    if (req.currentUser.role !== 'admin') {
+      return res.status(403).json({ message: 'If you are not admin, you cannot create new data' })
+    }
+    const createdDocument = await PlanModel.create({ ...newPlan, createdBy: req.currentUser.id })
     return res.status(200).json(createdDocument)
   } catch (error) {
     next(error)
@@ -37,12 +40,15 @@ const update = async (req, res, next) => {
   const { id } = req.params
   const { body: updatedPlan } = req
   try {
-    const updatedDocument = await PlanModel.findByIdAndUpdate(id, updatedPlan, { new: true })
-    if (!updatedDocument) {
-      return res.status(404).json({ message: `Plan with id ${id} cannot be found` })
-    } else {
-      return res.status(200).json(updatedDocument)
+    const documentToUpdate = await PlanModel.findById(id)
+    if (!documentToUpdate) {
+      return res.status(404).json({ message: `Plan with id ${id} could not be found.` })
     }
+    if (documentToUpdate.createdBy.toString() !== req.currentUser.id && req.currentUser.role !== 'admin') {
+      return res.status(403).json({ message: 'Forbidden. Not allowed to update this resource' })
+    }
+    const updatedDocument = await documentToUpdate.updateOne({ updatedPlan })
+    return res.status(200).json(updatedDocument)
   } catch (error) {
     next(error)
   }

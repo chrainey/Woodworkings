@@ -14,7 +14,7 @@ router.route('/plans').get(plansController.getAll).post(auth, plansController.ne
 router
   .route('/plans/:id')
   .get(plansController.getPlan)
-  .put(plansController.update)
+  .put(auth, plansController.update)
   .delete(plansController.remove)
 
 // Auth routes //

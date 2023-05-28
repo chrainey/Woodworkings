@@ -7,6 +7,7 @@ const planSchema = new mongoose.Schema({
   author: { type: String, required: true },
   type: String,
   createdAt: { type: Date, default: Date.now },
+  createdBy: { type: mongoose.Schema.ObjectId, ref: 'User', required: true },
 })
 
 export default mongoose.model('Plan', planSchema)
