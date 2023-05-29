@@ -2,7 +2,7 @@ import PlanModel from '../models/plans.js'
 
 // Get all plans //
 const getAll = async (req, res) => {
-  const allPlans = await PlanModel.find()
+  const allPlans = await PlanModel.find().populate('createdBy')
   console.log(allPlans)
   return res.status(200).json(allPlans)
 }
