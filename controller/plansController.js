@@ -47,7 +47,7 @@ const update = async (req, res, next) => {
     if (documentToUpdate.createdBy.toString() !== req.currentUser.id && req.currentUser.role !== 'admin') {
       return res.status(403).json({ message: 'Forbidden. Not allowed to update this resource' })
     }
-    const updatedDocument = await documentToUpdate.updateOne({ updatedPlan })
+    const updatedDocument = await PlanModel.findByIdAndUpdate(id, updatedPlan, { new: true })
     return res.status(200).json(updatedDocument)
   } catch (error) {
     next(error)

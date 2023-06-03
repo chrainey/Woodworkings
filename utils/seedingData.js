@@ -30,6 +30,13 @@ const plans = [
     price: 40,
     author: 'Chris Rainey',
     type: 'Table',
+    comments: [
+      {
+        text: 'Great project!',
+        rating: 5,
+        createdBy: users.user._id,
+      }
+    ],
   },
   {
     name: 'Workbench',

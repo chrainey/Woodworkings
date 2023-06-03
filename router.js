@@ -1,6 +1,7 @@
 import express from 'express'
 import plansController from './controller/plansController.js'
 import userController from './controller/userController.js'
+import commentController from './controller/commentController.js'
 import auth from './middleware/auth.js'
 
 //Instantiate an express router object
@@ -21,5 +22,9 @@ router
 
 router.route('/register').post(userController.register)
 router.route('/login').post(userController.login)
+
+// Comment Routes //
+
+router.route('/comment/:planId').post(auth, commentController.create)
 
 export default router
