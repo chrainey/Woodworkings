@@ -27,4 +27,9 @@ router.route('/login').post(userController.login)
 
 router.route('/comment/:planId').post(auth, commentController.create)
 
+router
+  .route('/comment/:planId/:commentId')
+  .put(auth, commentController.update)
+  .delete(auth, commentController.remove)
+
 export default router
