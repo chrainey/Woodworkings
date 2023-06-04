@@ -9,7 +9,16 @@ const create = async (req, res, next) => {
     if (!plan) {
       return res.status(404).json({ message: `Plan with ${planId} not found.` })
     }
-    plan.comments.push({ ...newComment, createdBy: req.currentUser.id })
+
+    const someCommentIsRated = plan.comments.some(
+      (comment) =>
+        comment.createdBy.toString() === req.currentUser.id && comment.rating
+    )
+    if (req.body.rating && someCommentIsRated) {
+      return res.status(403).json({ message: 'You already rated this plan.' })
+    }
+    const newComment = { ...req.body, createdBy: req.currentUser.id }
+    plan.comments.push(newComment)
     await plan.save()
     console.log(req.currentUser.id)
     return res.status(200).json({ message: 'Comment created.', createdComment: newComment })
